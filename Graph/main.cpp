@@ -23,7 +23,7 @@ int main(){
     // edges->add_edge("A", 1);
 
     // edges->show_edges();
-    std::shared_ptr<Graph> graph = std::make_shared<Graph>();
+    const auto graph = std::make_shared<Graph>();
     graph->add_node("A", 1);
     graph->_graph->nodes->show_nodes();
     // graph->delete_node("A");

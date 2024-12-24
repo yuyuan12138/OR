@@ -31,7 +31,7 @@ public:
     int _number_of_nodes = 0;
     std::vector<std::shared_ptr<Node>> _nodes;
     
-    void add_node(const std::string& name, const int val);
+    void add_node(const std::string& name, int val);
     void delete_node(const std::string& name);
     void show_nodes();
 };

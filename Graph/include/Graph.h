@@ -25,9 +25,9 @@ class Graph{
 public:
     std::shared_ptr<s_Graph> _graph = std::make_shared<s_Graph>();
 
-    void add_node(const std::string& name, int val);
+    void add_node(const std::string& name, int val) const;
     void add_edge(const std::string& name, int val);
-    void delete_node(const std::string& name);
+    void delete_node(const std::string& name) const;
     void delete_edge(const std::string& name);
     void show_graph();
 };

@@ -2,7 +2,7 @@
 
 void
 Edges::add_edge(const std::string& name, const int val){
-    std::shared_ptr<Edge> new_edge = std::make_shared<Edge>();
+    const auto new_edge = std::make_shared<Edge>();
     new_edge->idx = this->_number_of_edges;
     new_edge->name = name;
     new_edge->val = val;
@@ -15,7 +15,7 @@ Edges::delete_edge(const std::string& name) {
     this->_edges.erase(
         std::remove_if(
             _edges.begin(), _edges.end(),
-            [&name](std::shared_ptr<Edge> edge) {
+            [&name](const std::shared_ptr<Edge>& edge) {
                 if (edge->name == name) {
                     return true;
                 }
@@ -28,7 +28,7 @@ Edges::delete_edge(const std::string& name) {
 
 void
 Edges::show_edges(){
-    for(auto edge: this->_edges){
+    for(const auto& edge: this->_edges){
         std::cout << "Edge: "<< edge->idx << std::endl;
         std::cout << "Name: "<< edge->name << std::endl;
         std::cout << "Value: " << edge->val << std::endl;

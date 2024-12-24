@@ -16,7 +16,7 @@ Nodes::delete_node(const std::string& name) {
     _nodes.erase(
         std::remove_if(
             _nodes.begin(), _nodes.end(),
-            [&name](std::shared_ptr<Node> node) {
+            [&name](const std::shared_ptr<Node>& node) {
                 if (node->name == name) {
                     return true;
                 }
