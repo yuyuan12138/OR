@@ -4,13 +4,22 @@
 
 #include "Edge.h"
 #include "Node.h"
+#include <unordered_map>
 
-struct s_Graph
-{
-    std::shared_ptr<Nodes> nodes;
-    std::shared_ptr<Edges> edges;
-    std::vector<std::vector<int>> adjacency_matrix;
+
+struct Adjacency_Matrix{
+    int size;
+    std::vector<std::string> name_of_all_nodes;
+    std::vector<std::vector<int>> matrix;
 };
+class s_Graph
+{
+public:
+    std::shared_ptr<Nodes> nodes = std::make_shared<Nodes>();
+    std::shared_ptr<Edges> edges = std::make_shared<Edges>();
+    std::shared_ptr<Adjacency_Matrix> adjacency_matrix = std::make_shared<Adjacency_Matrix>();
+};
+
 
 class Graph{
 public:

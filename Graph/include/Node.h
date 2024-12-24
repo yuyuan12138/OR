@@ -2,7 +2,7 @@
  * @Author: yuyuan yuyuan12138x@gmail.com
  * @Date: 2024-12-24 10:55:00
  * @LastEditors: yuyuan yuyuan12138x@gmail.com
- * @LastEditTime: 2024-12-24 12:59:37
+ * @LastEditTime: 2024-12-24 15:03:07
  * @FilePath: \Graph\include\Node.h
  * @Description: 
  * @
@@ -26,9 +26,9 @@ struct Node
 
 class Nodes{
 public:
-    Nodes(): _number_of_nodes(0) {};
+    Nodes() = default;
     
-    int _number_of_nodes;
+    int _number_of_nodes = 0;
     std::vector<std::shared_ptr<Node>> _nodes;
     
     void add_node(const std::string& name, const int val);
