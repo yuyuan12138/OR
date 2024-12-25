@@ -1,5 +1,5 @@
-#ifndef _GRAPH_H_
-#define _GRAPH_H_
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "Edge.h"
 #include "Node.h"
@@ -21,12 +21,12 @@ public:
 
 class Graph {
 private:
-    static std::pair<std::string, std::string> parse_edge_name(const std::string& edge_name);
+
     void validate_graph() const;
     bool is_directed;
     
 public:
-
+    static std::pair<std::string, std::string> parse_edge_name(const std::string& edge_name);
     Graph(): is_directed(false) {};
     explicit Graph(const bool _is_directed): is_directed(_is_directed) {};
     explicit Graph(const std::vector<std::pair<std::string, int>>& nodes) : is_directed(false){

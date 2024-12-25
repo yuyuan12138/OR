@@ -1,5 +1,5 @@
-#ifndef _EDGE_H_
-#define _EDGE_H_
+#ifndef EDGE_H
+#define EDGE_H
 
 #include <vector>
 #include "Node.h"
