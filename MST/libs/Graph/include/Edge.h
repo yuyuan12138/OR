@@ -1,6 +1,7 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include <utility>
 #include <vector>
 #include "Node.h"
 #include <memory>
@@ -10,6 +11,8 @@ struct Edge {
     int idx;
     int val;
     std::string name;
+
+    Edge(const int idx, const int val, std::string name): idx(idx), val(val), name(std::move(name)){};
 };
 
 class Edges {

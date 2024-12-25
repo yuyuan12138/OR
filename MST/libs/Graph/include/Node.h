@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -12,6 +13,8 @@ struct Node {
     int idx;
     std::string name;
     int val;
+
+    Node(const int idx, std::string name, const int val): idx(idx), name(std::move(name)), val(val){};
 };
 
 class Nodes {

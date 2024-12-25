@@ -23,6 +23,7 @@ class Graph {
 private:
 
     void validate_graph() const;
+    void is_graph_connected_dfs(int vertex, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited) const;
     bool is_directed;
     
 public:
@@ -49,6 +50,8 @@ public:
     void show_graph() const;
     void add_nodes(const std::vector<std::pair<std::string, int>>& nodes) const;
     void add_edges(const std::vector<std::pair<std::string, int>>& edges) const;
+
+    [[nodiscard]] bool is_graph_connected() const;
 
 };
 

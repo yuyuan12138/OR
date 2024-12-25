@@ -10,10 +10,7 @@ void Nodes::add_node(const std::string& name, const int val) {
         std::cout << "Name: " << name << std::endl;
         return;
     }
-    const auto new_node = std::make_shared<Node>();
-    new_node->idx = this->_number_of_nodes;
-    new_node->name = name;
-    new_node->val = val;
+    const auto new_node = std::make_shared<Node>(this->_number_of_nodes, name, val);
     this->_number_of_nodes += 1;
     _nodes.push_back(new_node);
     this->mapping_name_to_idx[new_node->name] = new_node->idx;
@@ -45,7 +42,7 @@ void Nodes::delete_node(const std::string& name) {
 
 void Nodes::show_nodes() const {
     for (const auto& node : this->_nodes) {
-        std::cout << "Node: " << node->idx;
+        std::cout << "Node idx: " << node->idx;
         std::cout << " Name: " << node->name;
         std::cout << " Value: " << node->val << std::endl;
     }
