@@ -30,7 +30,7 @@ Kruskal::unionSets(std::vector<int>& parent, std::vector<int>& rank, const int u
 }
 
 int
-Kruskal::solve() {
+Kruskal::solve(const bool is_strict) {
     const std::shared_ptr<Graph> graph = graph_.lock();
 
     if (!graph) {
@@ -50,7 +50,7 @@ Kruskal::solve() {
     [this](const std::shared_ptr<Edge>&a, const std::shared_ptr<Edge>& b) {
         return a->val < b->val;
     });
-
+    std::vector<std::shared_ptr<Edge>> result;
     int mstWeight = 0;
     for (const auto& edge : edges) {
         auto [from, to] = Graph::parse_edge_name(edge->name);
@@ -60,6 +60,15 @@ Kruskal::solve() {
 
             unionSets(parent, rank, u, v);
             mstWeight += edge->val;
+            if (is_strict) {
+                result.push_back(edge);
+            }
+        }
+    }
+    if (is_strict) {
+        std::cout << "Kruskal MST Path:" << std::endl;
+        for (const auto& edge : result) {
+            std::cout << "Edge idx: "<< edge->idx << " Edge name: " << edge->name << " Edge value: " << edge->val << std::endl;
         }
     }
     return mstWeight;

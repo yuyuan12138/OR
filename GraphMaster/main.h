@@ -11,6 +11,6 @@
 #include "include/Edge.h"
 #include "include/Kruskal.h"
 #include "include/Prim.h"
-
+#include "include/Floyd.h"
 
 #endif //MAIN_H

@@ -17,7 +17,7 @@ private:
 public:
     explicit Kruskal(const std::weak_ptr<Graph>& graph): graph_(graph){}
 
-    int solve();
+    int solve(bool is_strict = false);
 };
 
 #endif //KRUSKAL_H

@@ -18,23 +18,25 @@ int main() {
     edges.emplace_back("C-D", 4);
     graph->add_edges(edges);
     const auto kruskal = std::make_shared<Kruskal>(graph);
-    const int mst = kruskal->solve();
+    const int mst = kruskal->solve(true);
 
     const auto prim = std::make_shared<Prim>(graph);
 
-    const int mst2 = prim->solve();
+    const int mst2 = prim->solve(true);
     std::cout << mst << std::endl;
     std::cout << mst2 << std::endl;
 
     std::cout << graph->is_graph_connected() << std::endl;
 
-    graph->delete_edge("B-D");
+    // graph->delete_edge("B-D");
+    //
+    // std::cout << graph->is_graph_connected() << std::endl;
+    // graph->delete_edge("A-B");
+    //
+    // std::cout << graph->is_graph_connected() << std::endl;
 
-    std::cout << graph->is_graph_connected() << std::endl;
-    graph->delete_edge("A-B");
-
-    std::cout << graph->is_graph_connected() << std::endl;
-
+    const auto floyd = Floyd(graph);
+    const auto dis = floyd.solve(true);
     // graph->show_graph();
     return 0;
 }

@@ -13,7 +13,7 @@
 class Prim {
 public:
     explicit Prim(const std::weak_ptr<Graph>& graph) : graph_(graph) {};
-    [[nodiscard]] int solve() const;
+    [[nodiscard]] int solve(bool is_strict = false) const;
 private:
     std::weak_ptr<Graph> graph_;
 };

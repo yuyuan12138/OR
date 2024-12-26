@@ -5,7 +5,7 @@
 #include "../include/Prim.h"
 
 int
-Prim::solve() const {
+Prim::solve(const bool is_strict) const {
     const std::shared_ptr<Graph> graph = graph_.lock();
 
     if (!graph) {
@@ -22,6 +22,8 @@ Prim::solve() const {
 
     std::vector<bool> inMST(n, false);
 
+    std::vector<std::shared_ptr<Edge>> result;
+
     minHeap.emplace(0, 0);
 
     while (!minHeap.empty()) {
@@ -35,6 +37,7 @@ Prim::solve() const {
         inMST[u] = true;
         mstWeight += weight;
 
+
         for (const auto& edge : graph->_graph->edges->_edges) {
             if (auto [from, to] = Graph::parse_edge_name(edge->name); graph->_graph->nodes->mapping_name_to_idx[from] == u ||
                                                                       graph->_graph->nodes->mapping_name_to_idx[to] == u){
@@ -45,6 +48,9 @@ Prim::solve() const {
 
                     if (!inMST[v]) {
                         minHeap.emplace(edgeWeight, v);
+                        if (is_strict) {
+                            result.push_back(edge);
+                        }
                     }
                 }
         }
@@ -54,6 +60,13 @@ Prim::solve() const {
         std::cerr << "Graph is not connected!" << std::endl;
         return -1;
     }
+    if (is_strict) {
+        std::cout << "Kruskal MST Path:" << std::endl;
+        for (const auto& edge : result) {
+            std::cout << "Edge idx: "<< edge->idx << " Edge name: " << edge->name << " Edge value: " << edge->val << std::endl;
+        }
+    }
+    
 
     return mstWeight;
 }
