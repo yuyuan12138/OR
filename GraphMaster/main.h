@@ -12,5 +12,9 @@
 #include "include/Kruskal.h"
 #include "include/Prim.h"
 #include "include/Floyd.h"
+#include <fstream>
+#include <vector>
+#include <tuple>
+#include <string>
 
 #endif //MAIN_H
