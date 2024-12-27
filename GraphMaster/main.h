@@ -16,5 +16,7 @@
 #include <vector>
 #include <tuple>
 #include <string>
+#include <sstream>
+#include <cxxopts.hpp>
 
 #endif //MAIN_H
