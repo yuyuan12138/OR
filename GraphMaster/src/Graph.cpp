@@ -146,9 +146,30 @@ Graph::show_graph() const {
 
 void
 Graph::add_nodes(const std::vector<std::pair<std::string, int>>& nodes) const {
-    for (const auto&[fst, snd] : nodes) {
-        this->add_node(fst, snd);
+    for (const auto& [name, val] : nodes) {
+        if (_graph->nodes->is_repeatable_node(name)) {
+            std::cout << "Error: Node '" << name << "' already exists!" << std::endl;   // 跳过已存在的节点
+        }
     }
+
+    // 批量添加节点
+    for (const auto& [name, val] : nodes) {
+        _graph->nodes->add_node(name, val);
+        _graph->adjacency_matrix->name_of_all_nodes.push_back(name);
+    }
+
+    // 更新邻接矩阵
+    _graph->adjacency_matrix->size = _graph->nodes->_number_of_nodes;
+    std::vector<std::vector<int>> new_matrix(_graph->adjacency_matrix->size, std::vector<int>(_graph->adjacency_matrix->size, 0));
+
+    // 迁移数据到新矩阵
+    for (int i = 0; i < _graph->adjacency_matrix->matrix.size(); ++i) {
+        for (int j = 0; j < _graph->adjacency_matrix->matrix[i].size(); ++j) {
+            new_matrix[i][j] = _graph->adjacency_matrix->matrix[i][j];
+        }
+    }
+
+    _graph->adjacency_matrix->matrix = new_matrix;
 }
 
 void

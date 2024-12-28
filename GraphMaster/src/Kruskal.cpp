@@ -45,19 +45,24 @@ Kruskal::solve(const bool is_strict) {
         parent[i] = i;
     }
 
+    // Create a mapping for node names to indices
+    std::unordered_map<std::string, int> mapping_name_to_idx = graph->_graph->nodes->mapping_name_to_idx;
+
     std::vector<std::shared_ptr<Edge>> edges = graph->_graph->edges->_edges;
     std::sort(edges.begin(), edges.end(),
     [this](const std::shared_ptr<Edge>&a, const std::shared_ptr<Edge>& b) {
         return a->val < b->val;
     });
+
     std::vector<std::shared_ptr<Edge>> result;
     int mstWeight = 0;
+    // Kruskal's algorithm core logic
     for (const auto& edge : edges) {
         auto [from, to] = Graph::parse_edge_name(edge->name);
-        const int u = graph->_graph->nodes->mapping_name_to_idx[from];
+        const int u = mapping_name_to_idx[from];
+        const int v = mapping_name_to_idx[to];
 
-        if (const int v = graph->_graph->nodes->mapping_name_to_idx[to]; find(parent, u) != find(parent, v)) {
-
+        if (find(parent, u) != find(parent, v)) {
             unionSets(parent, rank, u, v);
             mstWeight += edge->val;
             if (is_strict) {
@@ -65,6 +70,7 @@ Kruskal::solve(const bool is_strict) {
             }
         }
     }
+
     if (is_strict) {
         std::cout << "Kruskal MST Path:" << std::endl;
         for (const auto& edge : result) {

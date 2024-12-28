@@ -22,6 +22,22 @@ int Prim::solve(const bool is_strict) const {
     std::vector<bool> inMST(n, false);
     std::vector<std::shared_ptr<Edge>> result;
 
+    // Create a mapping for node names to indices
+    std::unordered_map<std::string, int> mapping_name_to_idx = graph->_graph->nodes->mapping_name_to_idx;
+
+    // Prepare edge indices
+    size_t edgeCount = graph->_graph->edges->_edges.size();
+    std::vector<int> from_indices(edgeCount);
+    std::vector<int> to_indices(edgeCount);
+    std::vector<int> edge_weights(edgeCount);
+
+    for (size_t i = 0; i < edgeCount; ++i) {
+        auto [from, to] = Graph::parse_edge_name(graph->_graph->edges->_edges[i]->name);
+        from_indices[i] = mapping_name_to_idx[from];
+        to_indices[i] = mapping_name_to_idx[to];
+        edge_weights[i] = graph->_graph->edges->_edges[i]->val;
+    }
+
     // Start from the first node (index 0)
     minHeap.emplace(0, 0);
 
@@ -41,29 +57,20 @@ int Prim::solve(const bool is_strict) const {
         // Record the edge, but only if weight > 0 and MST is meant to be strict
         if (is_strict && weight > 0) {
             // Find and record the edge corresponding to this vertex addition
-            for (const auto& edge : graph->_graph->edges->_edges) {
-                auto [from, to] = Graph::parse_edge_name(edge->name);
-                int fromIdx = graph->_graph->nodes->mapping_name_to_idx[from];
-                int toIdx = graph->_graph->nodes->mapping_name_to_idx[to];
-
-                if ((fromIdx == u || toIdx == u) && !inMST[(fromIdx == u) ? toIdx : fromIdx]) {
-                    result.push_back(edge);
+            for (size_t i = 0; i < edgeCount; ++i) {
+                if ((from_indices[i] == u || to_indices[i] == u) && !inMST[(from_indices[i] == u) ? to_indices[i] : from_indices[i]]) {
+                    result.push_back(graph->_graph->edges->_edges[i]);
                     break;  // Only add one edge for this step
                 }
             }
         }
 
         // Explore all edges from the current vertex u
-        for (const auto& edge : graph->_graph->edges->_edges) {
-            auto [from, to] = Graph::parse_edge_name(edge->name);
-            int fromIdx = graph->_graph->nodes->mapping_name_to_idx[from];
-            int toIdx = graph->_graph->nodes->mapping_name_to_idx[to];
-
-            // Check if either of the vertices can be connected
-            if (fromIdx == u && !inMST[toIdx]) {
-                minHeap.emplace(edge->val, toIdx);
-            } else if (toIdx == u && !inMST[fromIdx]) {
-                minHeap.emplace(edge->val, fromIdx);
+        for (size_t i = 0; i < edgeCount; ++i) {
+            if (from_indices[i] == u && !inMST[to_indices[i]]) {
+                minHeap.emplace(edge_weights[i], to_indices[i]);
+            } else if (to_indices[i] == u && !inMST[from_indices[i]]) {
+                minHeap.emplace(edge_weights[i], from_indices[i]);
             }
         }
     }

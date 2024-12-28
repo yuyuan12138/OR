@@ -66,7 +66,7 @@ int main(const int argc, char* argv[]) {
     nodes.reserve(n);
 
     for (int i = 1; i <= n; i++) {
-     nodes.emplace_back(std::to_string(i), i);
+        nodes.emplace_back(std::to_string(i), i);
     }
     graph->add_nodes(nodes);
 
