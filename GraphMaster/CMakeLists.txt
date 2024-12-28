@@ -11,11 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
 
 # 目录包含其他 CMake 模块
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cxxopts")
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cxxopts")
 
 # 添加头文件路径
 include_directories(include)
-include_directories(lib/cxxopts/include)  # cxxopts 头文件路径
+#include_directories(lib/cxxopts/include)  # cxxopts 头文件路径
 
 file(GLOB SOURCES "src/*.cpp")
 
