@@ -13,7 +13,7 @@ private:
     std::weak_ptr<Graph> _graph;
 public:
     explicit Floyd(const std::weak_ptr<Graph>& graph): _graph(graph) {};
-    [[nodiscard]] std::vector<std::vector<int>>  solve(bool is_strict = false) const;
+    [[nodiscard]] std::vector<std::vector<int>> solve(bool is_strict = false) const;
 };
 
 #endif //FLOYD_H

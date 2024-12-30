@@ -18,7 +18,7 @@ struct Edge {
 class Edges {
 public:
     Edges() : _number_of_edges(0) {};
-    int _number_of_edges;
+    size_t _number_of_edges;
     std::vector<std::shared_ptr<Edge>> _edges;
 
     void add_edge(const std::string& edge_name, int edge_value);
