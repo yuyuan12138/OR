@@ -1,7 +1,6 @@
 #include "main.h"
 
 cxxopts::ParseResult print_options(cxxopts::Options& options, const int argc, char* argv[]) {
-    // 定义命令行选项
     options.add_options()
         ("h,help", "Show help")  // 帮助选项
         ("f,file", "Input file", cxxopts::value<std::string>())  // 文件参数
@@ -10,28 +9,8 @@ cxxopts::ParseResult print_options(cxxopts::Options& options, const int argc, ch
         ("MST", "MST")
     ;
 
-    // 解析命令行参数
     const auto result = options.parse(argc, argv);
     return result;
-    // // 如果用户请求帮助，显示帮助信息
-    // if (result.count("help")) {
-    //     std::cout << options.help() << std::endl;
-    // }
-    //
-    // // 获取参数值
-    // std::string file;
-    // if (result.count("file")) {
-    //     file = result["file"].as<std::string>();
-    // }
-    //
-    // bool verbose = result.count("verbose") > 0;
-    // int count = result["count"].as<int>();
-
-    // 使用参数
-    // std::cout << "File: " << file << std::endl;
-    // // std::cout << "Verbose: " << verbose << std::endl;
-    // // std::cout << "Count: " << count << std::endl;
-    // return file;
 }
 
 int main(const int argc, char* argv[]) {
@@ -41,6 +20,10 @@ int main(const int argc, char* argv[]) {
 
     cxxopts::Options options("GraphMaster", "A simple program using cxxopts");
     const auto result = print_options(options, argc, argv);
+
+    if (result.count("help")) {
+        std::cout << options.help() << std::endl;
+    }
 
     const bool is_strict = result.count("verbose") > 0;
 

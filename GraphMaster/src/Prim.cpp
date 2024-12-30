@@ -50,17 +50,6 @@ int Prim::solve(const bool is_strict) const {
         inMST[u] = true;
         mstWeight += weight;
 
-        // // Record the edge, but only if weight > 0 and MST is meant to be strict
-        // if (is_strict && weight > 0) {
-        //     // Find and record the edge corresponding to this vertex addition
-        //     for (size_t i = 0; i < edgeCount; ++i) {
-        //         if ((from_indices[i] == u || to_indices[i] == u) && !inMST[(from_indices[i] == u) ? to_indices[i] : from_indices[i]]) {
-        //             result.push_back(graph->_graph->edges->_edges[i]);
-        //             break;  // Only add one edge for this step
-        //         }
-        //     }
-        // }
-
         // Explore all edges from the current vertex u
         for (const auto &[weight, v] : adjList[u]) {
             if (!inMST[v]) {
@@ -71,7 +60,7 @@ int Prim::solve(const bool is_strict) const {
     }
 
     // Ensure we visited all nodes
-    if (std::any_of(inMST.begin(), inMST.end(), [](bool visited) { return !visited; })) {
+    if (std::any_of(inMST.begin(), inMST.end(), [](const bool visited) { return !visited; })) {
         std::cerr << "Graph is not connected!" << std::endl;
         return -1;
     }
