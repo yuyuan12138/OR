@@ -1,23 +1,7 @@
 #include "../include/Graph.h"
 #include <stdexcept>
 
-void Graph::add_node(const std::string& name, const int val) const {
-    if (_graph->nodes->is_repeatable_node(name)) {
-        std::cout << "Error: Node already exists!" << std::endl;
-        return;
-    }
-    _graph->nodes->add_node(name, val);
-    _graph->adjacency_matrix->name_of_all_nodes.push_back(name);
-    _graph->adjacency_matrix->size = _graph->nodes->_number_of_nodes;
 
-    std::vector<std::vector<int>> new_matrix(_graph->adjacency_matrix->size, std::vector<int>(_graph->adjacency_matrix->size));
-    for (int i = 0; i < _graph->adjacency_matrix->size - 1; ++i) {
-        for (int j = 0; j < _graph->adjacency_matrix->size - 1; ++j) {
-            new_matrix[i][j] = _graph->adjacency_matrix->matrix[i][j];
-        }
-    }
-    _graph->adjacency_matrix->matrix = new_matrix;
-}
 
 void Graph::delete_node(const std::string &name) const {
     if (!_graph->nodes->is_repeatable_node(name)) {
@@ -40,7 +24,7 @@ void Graph::delete_node(const std::string &name) const {
     _graph->adjacency_matrix->size -= 1;
 
     // Validate graph integrity after deletion
-    const_cast<Graph*>(this)->validate_graph();
+    this->validate_graph();
 }
 
 void Graph::delete_edge(const std::string& name) const {
@@ -56,6 +40,13 @@ void Graph::delete_edge(const std::string& name) const {
                     matrix[i][j] = 0;
                     if (!_graph->is_directed) {
                         matrix[j][i] = 0;
+                    }
+                    auto& adjList = _graph->adjacency_list->list;
+                    adjList[i].erase(std::remove_if(adjList[i].begin(), adjList[i].end(),
+                        [&names, j](const std::pair<int, std::string>& p) { return names[j] == p.second; }), adjList[i].end());
+                    if (!_graph->is_directed) {
+                        adjList[j].erase(std::remove_if(adjList[j].begin(), adjList[j].end(),
+                            [&names, i](const std::pair<int, std::string>& p) { return names[i] == p.second; }), adjList[j].end());
                     }
                 }
             }
@@ -75,31 +66,40 @@ std::pair<std::string, std::string> Graph::parse_edge_name(const std::string& ed
     return {from, to};
 }
 
+// todo set a override (from, to, val)
+void Graph::add_edge(const std::string& name, const std::string& from, const std::string& to, const int val) const {
+    const auto& nodes = _graph->nodes;
+    if (!nodes->is_repeatable_node(from) || !nodes->is_repeatable_node(to)) {
+        std::cout << "Error: One or both nodes do not exist!" << std::endl;
+        return;
+    }
+    const int from_idx = nodes->mapping_name_to_idx[from];
+    const int to_idx = nodes->mapping_name_to_idx[to];
+
+    auto& matrix = _graph->adjacency_matrix->matrix;
+    if (from_idx >= _graph->adjacency_matrix->size || to_idx >= _graph->adjacency_matrix->size) {
+        std::cout << "Error: Invalid indices for adjacency matrix!" << std::endl;
+        return;
+    }
+    matrix[from_idx][to_idx] = val;
+
+    auto& adjList = _graph->adjacency_list->list;
+    if (from_idx >= adjList.size() || to_idx >= adjList.size()) {
+        adjList.resize(std::max(from_idx + 1, to_idx + 1));
+    }
+    adjList[from_idx].emplace_back(val, to);
+
+    if (!_graph->is_directed) {
+        matrix[to_idx][from_idx] = val;
+        adjList[to_idx].emplace_back(val, from);
+    }
+    _graph->edges->add_edge(name, val);
+}
+
 void Graph::add_edge(const std::string& name, const int val) const {
     try {
         auto [from, to] = parse_edge_name(name);
-
-        const auto& nodes = _graph->nodes;
-        if (!nodes->is_repeatable_node(from) || !nodes->is_repeatable_node(to)) {
-            std::cout << "Error: One or both nodes do not exist!" << std::endl;
-            return;
-        }
-
-        const int from_idx = nodes->mapping_name_to_idx[from];
-        const int to_idx = nodes->mapping_name_to_idx[to];
-
-        auto& matrix = _graph->adjacency_matrix->matrix;
-        if (from_idx >= _graph->adjacency_matrix->size || to_idx >= _graph->adjacency_matrix->size) {
-            std::cout << "Error: Invalid indices for adjacency matrix!" << std::endl;
-            return;
-        }
-        matrix[from_idx][to_idx] = val;
-
-        if (!_graph->is_directed) {
-            matrix[to_idx][from_idx] = val;
-        }
-
-        _graph->edges->add_edge(name, val);
+        add_edge(name, from, to, val);
     } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
@@ -142,6 +142,34 @@ Graph::show_graph() const {
         }
         std::cout << std::endl;
     }
+
+    std::cout << "Adjacency List:" << std::endl;
+    for (size_t i = 0; i < _graph->adjacency_list->list.size(); ++i) {
+        std::cout << "Node " << i << ": ";
+        for (const auto& [weight, node_name] : _graph->adjacency_list->list[i]) {
+            std::cout << "(" << weight << ", " << node_name << ") ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void
+Graph::add_node(const std::string& name, const int val) const {
+    if (_graph->nodes->is_repeatable_node(name)) {
+        std::cout << "Error: Node already exists!" << std::endl;
+        return;
+    }
+    _graph->nodes->add_node(name, val);
+    _graph->adjacency_matrix->name_of_all_nodes.push_back(name);
+    _graph->adjacency_matrix->size = _graph->nodes->_number_of_nodes;
+
+    std::vector<std::vector<int>> new_matrix(_graph->adjacency_matrix->size, std::vector<int>(_graph->adjacency_matrix->size));
+    for (int i = 0; i < _graph->adjacency_matrix->size - 1; ++i) {
+        for (int j = 0; j < _graph->adjacency_matrix->size - 1; ++j) {
+            new_matrix[i][j] = _graph->adjacency_matrix->matrix[i][j];
+        }
+    }
+    _graph->adjacency_matrix->matrix = new_matrix;
 }
 
 void
@@ -163,9 +191,10 @@ Graph::add_nodes(const std::vector<std::pair<std::string, int>>& nodes) const {
     std::vector<std::vector<int>> new_matrix(_graph->adjacency_matrix->size, std::vector<int>(_graph->adjacency_matrix->size, 0));
 
     // 迁移数据到新矩阵
+    const auto matrix = _graph->adjacency_matrix->matrix;
     for (int i = 0; i < _graph->adjacency_matrix->matrix.size(); ++i) {
         for (int j = 0; j < _graph->adjacency_matrix->matrix[i].size(); ++j) {
-            new_matrix[i][j] = _graph->adjacency_matrix->matrix[i][j];
+            new_matrix[i][j] = matrix[i][j];
         }
     }
 
@@ -179,6 +208,13 @@ Graph::add_edges(const std::vector<std::pair<std::string, int>>& edges) const {
     }
 }
 
+void
+Graph::add_edges(const std::vector<std::tuple<std::string, std::string, std::string, int>>& edges) const {
+    for (const auto&[name, from, to, value]: edges) {
+        this->add_edge(name, from, to, value);
+    }
+}
+
 bool
 Graph::is_graph_connected() const {
     const auto& adj = this->_graph->adjacency_matrix->matrix;
@@ -189,7 +225,7 @@ Graph::is_graph_connected() const {
 }
 
 void
-Graph::is_graph_connected_dfs(const int vertex, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited) const {
+Graph::is_graph_connected_dfs(const size_t vertex, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited) const {
     visited[vertex] = true;
     for (size_t i = 0; i < adj[vertex].size(); ++i) {
         if (adj[vertex][i] >= 1 && !visited[i]) {

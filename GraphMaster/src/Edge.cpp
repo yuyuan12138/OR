@@ -1,7 +1,7 @@
 #include "../include/Edge.h"
 
-void Edges::add_edge(const std::string& name, const int val) {
-    const auto new_edge = std::make_shared<Edge>(this->_number_of_edges, val, name);
+void Edges::add_edge(const std::string& edge_name, const int edge_value) {
+    const auto new_edge = std::make_shared<Edge>(this->_number_of_edges, edge_value, edge_name);
     this->_number_of_edges += 1;
     this->_edges.push_back(new_edge);
 }

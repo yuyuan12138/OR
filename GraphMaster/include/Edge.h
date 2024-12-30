@@ -21,7 +21,7 @@ public:
     int _number_of_edges;
     std::vector<std::shared_ptr<Edge>> _edges;
 
-    void add_edge(const std::string& name, int val);
+    void add_edge(const std::string& edge_name, int edge_value);
     void delete_edge(const std::string& name);
 
     void show_edges() const;

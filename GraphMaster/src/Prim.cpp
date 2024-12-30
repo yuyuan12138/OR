@@ -17,33 +17,29 @@ int Prim::solve(const bool is_strict) const {
     int mstWeight = 0;
 
     using EdgePair = std::pair<int, int>; // (weight, vertex)
-    std::priority_queue<EdgePair, std::vector<EdgePair>, std::greater<>> minHeap;
+    std::vector<EdgePair> minHeap;
+    minHeap.emplace_back(0, 0);  // 从第一个节点开始
+    std::make_heap(minHeap.begin(), minHeap.end(), std::greater<>());
 
     std::vector<bool> inMST(n, false);
     std::vector<std::shared_ptr<Edge>> result;
+    std::vector<std::vector<EdgePair>> adjList(n);
 
     // Create a mapping for node names to indices
     std::unordered_map<std::string, int> mapping_name_to_idx = graph->_graph->nodes->mapping_name_to_idx;
-
-    // Prepare edge indices
-    size_t edgeCount = graph->_graph->edges->_edges.size();
-    std::vector<int> from_indices(edgeCount);
-    std::vector<int> to_indices(edgeCount);
-    std::vector<int> edge_weights(edgeCount);
-
-    for (size_t i = 0; i < edgeCount; ++i) {
-        auto [from, to] = Graph::parse_edge_name(graph->_graph->edges->_edges[i]->name);
-        from_indices[i] = mapping_name_to_idx[from];
-        to_indices[i] = mapping_name_to_idx[to];
-        edge_weights[i] = graph->_graph->edges->_edges[i]->val;
+    const auto edges = graph->_graph->edges->_edges;
+    for (const auto& edge: edges) {
+        auto [from, to] = Graph::parse_edge_name(edge->name);
+        int fromIdx = mapping_name_to_idx[from];
+        int toIdx = mapping_name_to_idx[to];
+        adjList[fromIdx].emplace_back(edge->val, toIdx);
+        adjList[toIdx].emplace_back(edge->val, fromIdx);
     }
 
-    // Start from the first node (index 0)
-    minHeap.emplace(0, 0);
-
     while (!minHeap.empty()) {
-        const auto [weight, u] = minHeap.top();  // Extract the edge with minimum weight
-        minHeap.pop();
+        const auto [weight, u] = minHeap.front();  // Extract the edge with minimum weight
+        std::pop_heap(minHeap.begin(), minHeap.end(), std::greater<>()); // 取出最小值
+        minHeap.pop_back();
 
         // If vertex u is already in MST, continue to next
         if (inMST[u]) {
@@ -54,23 +50,22 @@ int Prim::solve(const bool is_strict) const {
         inMST[u] = true;
         mstWeight += weight;
 
-        // Record the edge, but only if weight > 0 and MST is meant to be strict
-        if (is_strict && weight > 0) {
-            // Find and record the edge corresponding to this vertex addition
-            for (size_t i = 0; i < edgeCount; ++i) {
-                if ((from_indices[i] == u || to_indices[i] == u) && !inMST[(from_indices[i] == u) ? to_indices[i] : from_indices[i]]) {
-                    result.push_back(graph->_graph->edges->_edges[i]);
-                    break;  // Only add one edge for this step
-                }
-            }
-        }
+        // // Record the edge, but only if weight > 0 and MST is meant to be strict
+        // if (is_strict && weight > 0) {
+        //     // Find and record the edge corresponding to this vertex addition
+        //     for (size_t i = 0; i < edgeCount; ++i) {
+        //         if ((from_indices[i] == u || to_indices[i] == u) && !inMST[(from_indices[i] == u) ? to_indices[i] : from_indices[i]]) {
+        //             result.push_back(graph->_graph->edges->_edges[i]);
+        //             break;  // Only add one edge for this step
+        //         }
+        //     }
+        // }
 
         // Explore all edges from the current vertex u
-        for (size_t i = 0; i < edgeCount; ++i) {
-            if (from_indices[i] == u && !inMST[to_indices[i]]) {
-                minHeap.emplace(edge_weights[i], to_indices[i]);
-            } else if (to_indices[i] == u && !inMST[from_indices[i]]) {
-                minHeap.emplace(edge_weights[i], from_indices[i]);
+        for (const auto &[weight, v] : adjList[u]) {
+            if (!inMST[v]) {
+                minHeap.emplace_back(weight, v);
+                std::push_heap(minHeap.begin(), minHeap.end(), std::greater<>()); // 维持堆
             }
         }
     }
